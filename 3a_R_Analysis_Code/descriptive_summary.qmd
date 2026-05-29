@@ -30,7 +30,8 @@ sicb_lookup <- left_join(
   x = sicb_lookup, 
   y = unique(select(sicb_yearmon_outcomes, sicb_code, place_name)))
 
-
+# set max date as four months before the latest month included in the dataset
+max_date = max(sicb_yearmon_outcomes$YearMon) - (4/12)
 ```
 
 ## Overview
@@ -198,15 +199,15 @@ rural_tbl |>
 
 ### Reduction in hospital admissions for people living with frailty
 
-Hospital admissions by frail in`dividuals is defined as the number of unplanned admissions to hospital by patients with a HFRS of five or over at the time of admission.
+Hospital admissions by people living with frailty is defined as the number of unplanned admissions to hospital by patients with a HFRS of five or over at the time of admission.
 
 ```{r, include = FALSE}
 
-sum_apc_admiss <- signif(sum(subset(sicb_yearmon_outcomes, YearMon <= "Oct 2025")$apc_admissions),3)
-mean_apc_admiss <- signif(mean(subset(sicb_yearmon_outcomes, YearMon <= "Oct 2025")$apc_admissions),3)
+sum_apc_admiss <- signif(sum(subset(sicb_yearmon_outcomes, YearMon <= max_date)$apc_admissions),3)
+mean_apc_admiss <- signif(mean(subset(sicb_yearmon_outcomes, YearMon <= max_date)$apc_admissions),3)
 
 place_apc_admissions <- sicb_yearmon_outcomes |> 
-  subset(YearMon <= "Oct 2025") |> 
+  subset(YearMon <= max_date) |> 
   mutate(place_name = ifelse(test = is.na(place_name), 
                              yes = "Average of control places", 
                              no = place_name)) |> 
@@ -217,7 +218,7 @@ place_apc_admissions <- sicb_yearmon_outcomes |>
             'Average hospital admissions' = mean_apc_admissions)
 
 apc_admissions_plot <- sicb_yearmon_outcomes |> 
-  subset(YearMon <= "Oct 2025") |> 
+  subset(YearMon <= max_date) |> 
   mutate(place_name = ifelse(test = is.na(place_name), 
                              yes = "Average of control places", 
                              no = place_name)) |> 
@@ -259,7 +260,7 @@ The national trend for hospital admissions by people living with frailty per mon
 ```{r, echo = FALSE}
 
 sicb_yearmon_outcomes |> 
-  subset(YearMon <= "Oct 2025") |> 
+  subset(YearMon <= max_date) |> 
   group_by(YearMon) |> 
   summarise(apc_admissions = sum(apc_admissions)) |> 
   ungroup() |> 
@@ -287,11 +288,11 @@ Hospital readmissions for people living with frailty within 28 days of discharge
 
 ```{r, include = FALSE}
 
-sum_apc_readmiss <- signif(sum(subset(sicb_yearmon_outcomes, YearMon <= "Oct 2025")$apc_readmissions),3)
-mean_apc_readmiss <- signif(mean(subset(sicb_yearmon_outcomes, YearMon <= "Oct 2025")$apc_readmissions),3)
+sum_apc_readmiss <- signif(sum(subset(sicb_yearmon_outcomes, YearMon <= max_date)$apc_readmissions),3)
+mean_apc_readmiss <- signif(mean(subset(sicb_yearmon_outcomes, YearMon <= max_date)$apc_readmissions),3)
 
 place_apc_readmissions <- sicb_yearmon_outcomes |> 
-  subset(YearMon <= "Oct 2025") |> 
+  subset(YearMon <= max_date) |> 
   mutate(place_name = ifelse(test = is.na(place_name), 
                              yes = "Average of control places", 
                              no = place_name)) |> 
@@ -302,7 +303,7 @@ place_apc_readmissions <- sicb_yearmon_outcomes |>
             'Average hospital readmissions' = mean_apc_readmissions)
 
 apc_readmissions_plot <- sicb_yearmon_outcomes |> 
-  subset(YearMon <= "Oct 2025") |> 
+  subset(YearMon <= max_date) |> 
   mutate(place_name = ifelse(test = is.na(place_name), 
                              yes = "Average of control places", 
                              no = place_name)) |> 
@@ -343,7 +344,7 @@ The national trend for hospital readmissions by people living with frailty is sh
 ```{r, echo = FALSE}
 
 sicb_yearmon_outcomes |> 
-  subset(YearMon <= "Oct 2025") |> 
+  subset(YearMon <= max_date) |> 
   group_by(YearMon) |> 
   summarise(apc_readmissions = sum(apc_readmissions)) |> 
   ungroup() |> 
@@ -369,11 +370,11 @@ Attendances to Emergency Departments (ED) for people living with frailty is defi
 
 ```{r, include = FALSE}
 
-sum_ed_admiss <- signif(sum(subset(sicb_yearmon_outcomes, YearMon <= "Oct 2025" & YearMon >= "Apr 2019")$ed_admissions),3)
-mean_ed_admiss <- signif(mean(subset(sicb_yearmon_outcomes, YearMon <= "Oct 2025" & YearMon >= "Apr 2019")$ed_admissions),3)
+sum_ed_admiss <- signif(sum(subset(sicb_yearmon_outcomes, YearMon <= max_date & YearMon >= "Apr 2019")$ed_admissions),3)
+mean_ed_admiss <- signif(mean(subset(sicb_yearmon_outcomes, YearMon <= max_date & YearMon >= "Apr 2019")$ed_admissions),3)
 
 place_ed_admissions <- sicb_yearmon_outcomes |> 
-  subset(YearMon <= "Oct 2025" & YearMon >= "Apr 2019") |> 
+  subset(YearMon <= max_date & YearMon >= "Apr 2019") |> 
   mutate(place_name = ifelse(test = is.na(place_name), 
                              yes = "Average of control places", 
                              no = place_name)) |> 
@@ -384,7 +385,7 @@ place_ed_admissions <- sicb_yearmon_outcomes |>
             'Average ED admissions' = mean_ed_admissions)
 
 ed_admissions_plot <- sicb_yearmon_outcomes |> 
-  subset(YearMon <= "Oct 2025" & YearMon >= "Apr 2019") |> 
+  subset(YearMon <= max_date & YearMon >= "Apr 2019") |> 
   mutate(place_name = ifelse(test = is.na(place_name), 
                              yes = "Average of control places", 
                              no = place_name)) |> 
@@ -424,7 +425,7 @@ The national trend for ED admissions by people living with frailty per month is 
 ```{r, echo = FALSE}
 
 sicb_yearmon_outcomes |>    
-  subset(YearMon <= "Oct 2025" & YearMon >= "Apr 2019") |>    
+  subset(YearMon <= max_date & YearMon >= "Apr 2019") |>    
   group_by(YearMon) |>    
   summarise(ed_admissions = sum(ed_admissions)) |>    
   ungroup() |>    
@@ -452,11 +453,11 @@ Total bed days used by people living with frailty is the sum of completed days i
 ```{r, include = FALSE}
 
 
-sum_apc_hospital_days <- signif(sum(subset(sicb_yearmon_outcomes, YearMon <= "Oct 2025")$apc_hospital_days),3)
-mean_apc_hospital_days <- signif(mean(subset(sicb_yearmon_outcomes, YearMon <= "Oct 2025")$ed_admissions),3)
+sum_apc_hospital_days <- signif(sum(subset(sicb_yearmon_outcomes, YearMon <= max_date)$apc_hospital_days),3)
+mean_apc_hospital_days <- signif(mean(subset(sicb_yearmon_outcomes, YearMon <= max_date)$ed_admissions),3)
 
 place_apc_hospital_days <- sicb_yearmon_outcomes |> 
-  subset(YearMon <= "Oct 2025") |> 
+  subset(YearMon <= max_date) |> 
   mutate(place_name = ifelse(test = is.na(place_name), 
                              yes = "Average of control places", 
                              no = place_name)) |> 
@@ -467,7 +468,7 @@ place_apc_hospital_days <- sicb_yearmon_outcomes |>
             'Monthly average of total hospital days' = mean_apc_hospital_days)
 
 apc_hospital_days_plot <- sicb_yearmon_outcomes |> 
-  subset(YearMon <= "Oct 2025") |> 
+  subset(YearMon <= max_date) |> 
   mutate(place_name = ifelse(test = is.na(place_name), 
                              yes = "Average of control places", 
                              no = place_name)) |> 
@@ -508,7 +509,7 @@ The national trend for total hospital days by people living with frailty per mon
 ```{r, echo = FALSE}
 
 sicb_yearmon_outcomes |>    
-  subset(YearMon <= "Oct 2025") |>    
+  subset(YearMon <= max_date) |>    
   group_by(YearMon) |>    
   summarise(apc_hospital_days = sum(apc_hospital_days)) |>    
   ungroup() |>    
@@ -540,7 +541,7 @@ The average length of stay for people living with frailty is the total number of
 mean_apc_los <- sum_apc_hospital_days/sum_apc_admiss
 
 place_apc_los <- sicb_yearmon_outcomes |>    
-  subset(YearMon <= "Oct 2025") |>    
+  subset(YearMon <= max_date) |>    
   mutate(place_name = ifelse(test = is.na(place_name),                              
                              yes = "Average of control places",             
                              no = place_name)) |>    
@@ -553,7 +554,7 @@ place_apc_los <- sicb_yearmon_outcomes |>
               sum_apc_hospital_days/sum_apc_admiss, 2)) 
 
 apc_los_plot <- sicb_yearmon_outcomes |>    
-  subset(YearMon <= "Oct 2025") |>   
+  subset(YearMon <= max_date) |>   
   mutate(place_name = ifelse(test = is.na(place_name),          
                              yes = "Average of control places",      
                              no = place_name)) |>    
@@ -594,7 +595,7 @@ The national trend for average hospital length of stay by people living with fra
 ```{r, echo=FALSE}
 
 sicb_yearmon_outcomes |>    
-  subset(YearMon <= "Oct 2025") |>    
+  subset(YearMon <= max_date) |>    
   mutate(place_name = ifelse(test = is.na(place_name),                              
                              yes = "Average of control places",             
                              no = place_name)) |>    
@@ -628,12 +629,12 @@ Hospital conveyances for people living with frailty was defined as the number of
 
 ```{r, include=FALSE}
 
-sum_ed_amb_admiss <- signif(sum(subset(sicb_yearmon_outcomes, YearMon <= "Oct 2025" & YearMon >= "Apr 2019")$ed_admissions_by_ambulance),3)
+sum_ed_amb_admiss <- signif(sum(subset(sicb_yearmon_outcomes, YearMon <= max_date & YearMon >= "Apr 2019")$ed_admissions_by_ambulance),3)
 
-mean_ed_admiss <- signif(mean(subset(sicb_yearmon_outcomes, YearMon <= "Oct 2025" & YearMon >= "Apr 2019")$ed_admissions),3)
+mean_ed_admiss <- signif(mean(subset(sicb_yearmon_outcomes, YearMon <= max_date & YearMon >= "Apr 2019")$ed_admissions),3)
 
 place_ed_amb_admissions <- sicb_yearmon_outcomes |> 
-  subset(YearMon <= "Oct 2025" & YearMon >= "Apr 2019") |> 
+  subset(YearMon <= max_date & YearMon >= "Apr 2019") |> 
   mutate(place_name = ifelse(test = is.na(place_name), 
                              yes = "Average of control places", 
                              no = place_name)) |> 
@@ -650,7 +651,7 @@ place_ed_amb_admissions <- sicb_yearmon_outcomes |>
               100*(ed_amb_admissions/ed_admissions), 1))
 
 ed_amb_admissions_plot <- sicb_yearmon_outcomes |> 
-  subset(YearMon <= "Oct 2025" & YearMon >= "Apr 2019") |> 
+  subset(YearMon <= max_date & YearMon >= "Apr 2019") |> 
   mutate(place_name = ifelse(test = is.na(place_name), 
                              yes = "Average of control places", 
                              no = place_name)) |> 
@@ -693,7 +694,7 @@ The national trend for frail ED ambulance admissions as a percentage per month i
 ```{r, echo=FALSE}
 
 sicb_yearmon_outcomes |> 
-  subset(YearMon <= "Oct 2025" & YearMon >= "Apr 2019") |> 
+  subset(YearMon <= max_date & YearMon >= "Apr 2019") |> 
   mutate(place_name = ifelse(test = is.na(place_name), 
                              yes = "Average of control places", 
                              no = place_name)) |> 
@@ -739,7 +740,7 @@ The overall breakdown for discharge date for people living with frailty across a
 ```{r, echo = FALSE}
 
 sicb_yearmon_outcomes |> 
-  subset(YearMon <= "Oct 2025") |> 
+  subset(YearMon <= max_date) |> 
   summarise(Discharged_on_admission_date = sum(Discharged_on_admission_date), 
             No_DRD = sum(No_DRD), 
             Discharged_after_DRD = sum(Discharged_after_DRD), 
@@ -778,7 +779,7 @@ The breakdown changes substantially over time, with the biggest change being a d
 ```{r, echo=FALSE}
 
 sicb_yearmon_outcomes |> 
-  subset(YearMon <= "Oct 2025") |> 
+  subset(YearMon <= max_date) |> 
   group_by(YearMon) |> 
   summarise(Discharged_on_admission_date = sum(Discharged_on_admission_date), 
             No_DRD = sum(No_DRD), 
@@ -872,7 +873,7 @@ The average percentage of people living with frailty discharged to their usual p
 ```{r, echo=FALSE}
 
 disch |>
-  subset(YearMon <= "Oct 2025") |>    
+  subset(YearMon <= max_date) |>    
   mutate(place_name = ifelse(test = is.na(place_name),                              
                              yes = "Average of control places",             
                              no = place_name)) |>    

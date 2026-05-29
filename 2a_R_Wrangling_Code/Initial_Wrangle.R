@@ -1,6 +1,13 @@
 rm(list = ls())
 
 # 0 packages ----
+
+# these install the relevant packages
+install.packages("tidyverse")
+install.packages("zoo")
+install.packages("readxl")
+
+# this loads it for use now
 library(tidyverse)
 library(zoo)
 
@@ -108,7 +115,7 @@ gp_codes.0 <- full_join(depr_gp_code, rural_gp_code) |>
 # remove everything ap1rt from the desired outcome
 rm(list = setdiff(ls(), c("gp_codes.0")))
 
-# 2 construct gp to icb lookup BUT BETTER ----
+# 2 construct gp to icb lookup BUT BETTER THAN HOW I DID IT BEFORE ----
 
 # 2a import dataset ----
 # import all the gp to sub icb lookup
@@ -127,104 +134,93 @@ gp_lookup <- read.csv(
             sicb_2122 = V10, 
             sicb_2223 = V11, 
             sicb_2324 = V12, 
-            sicb_2425 = V13)
+            sicb_2425 = V13) |> 
+  mutate(best_sicb_1718 = ifelse(test = sicb_1718 == "NULL", 
+                                 yes = sicb_2425, 
+                                 no = sicb_1718))
+
+# big issue issue here is gloucestershire (QR1) has only one sub ICB area
+# this is true in previous years as well
+
+# imports a lookup of all the gp codes to pcn in gloucestershire (QR1)
+# sheet 1 is all go codes to pcn, but sheet 2 already filters for just active in qr1
+tidying_up_qr1 <- readxl::read_xlsx(
+  path = "1b_Raw_Data/control_vars/epcncorepartnerdetails (Include headers).xlsx", 
+  sheet = 2) |> 
+  # rename and select only cols we want
+  transmute(gp_code = `Partner Organisation Code`, 
+            pcn_code = `PCN Name`)
 
 # rename as gps by sicb
 gps_by_sicb <- gp_lookup |> 
   transmute(gp_code = gp_code, 
-            sicb_code = sicb_1718 ) |> 
-  # this manually allocates GPs to integrated locality partnerships (via PCN groups) as no CCG or sub-ICBs
-  mutate(sicb_code = case_when(
-    sicb_code != "11M" ~ sicb_code,
-    gp_code %in% c("L84030", 
-                   "L84041", 
-                   "L84059", 
-                   "L84003", 
-                   "L84022") ~ "Cheltenham", 
-    gp_code %in% c("L84036", 
-                   "L84015", 
-                   "L84048", 
-                   "L84040",
-                   "L84004") ~ "Cheltenham",
-    gp_code %in% c("L84049", 
-                   "L84058", 
-                   "L84008", 
-                   "L84033") ~ "Cheltenham", 
-    gp_code %in% c("L84043", 
-                   "L84038", 
-                   "L84068", 
-                   "L84031", 
-                   "L84072") ~ "Cotswolds", 
-    gp_code %in% c("L84018", 
-                   "L84053", 
-                   "L84012", 
-                   "L84063", 
-                   "L84010") ~ "Cotswolds", 
-    gp_code %in% c("L84046", 
-                   "L84024", 
-                   "L84028", 
-                   "L84045") ~ "Dean", 
-    gp_code %in% c("L84029", 
-                   "L84085", 
-                   "L84011", 
-                   "L84021") ~ "Dean", 
-    gp_code %in% c("L84026") ~ "Gloucester", 
-    gp_code %in% c("Y02519", 
-                   "L84081", 
-                   "L84034", 
-                   "L84052") ~ "Gloucester", 
-    gp_code %in% c("L84606", 
-                   "L84084", 
-                   "L84047", 
-                   "L84014", 
-                   "L84067") ~ "Gloucester",  # this is the actual N&S Gloucester
-    gp_code %in% c("L84050") ~ "Gloucester", 
-    gp_code %in% c("L84617", 
-                   "L84009") ~ "Gloucester", 
-    gp_code %in% c("L84060", 
-                   "L84027", 
-                   "L84075", 
-                   "L84051") ~ "Stroud", 
-    gp_code %in% c("L84077", 
-                   "L84080", 
-                   "L84065", 
-                   "L84613") ~ "Stroud", 
-    gp_code %in% c("L84039", 
-                   "L84016", 
-                   "L84005", 
-                   "L84025", 
-                   "L84007") ~ "Stroud", 
-    gp_code %in% c("L84023", 
-                   "L84054", 
-                   "L84037", 
-                   "L84006", 
-                   "Y05212") ~ "Tewkesbury", 
-    .default = "Other Gloucestershire"))
+            gp_name = gp_name, 
+            sicb_code = best_sicb_1718 ) 
 
+# so join together the pcn name for QR1 GPs table with all the sicbs
+gps_by_sicb <- left_join(gps_by_sicb, tidying_up_qr1) |> 
+  # this manually allocates GPs to integrated locality partnerships (via PCN groups) as no CCG or sub-ICBs
+  # this is derived from https://www.nhsglos.nhs.uk/about-us/who-we-are-and-what-we-do/integrated-locality-partnerships-ilps-and-primary-care-networks/
+  mutate(sicb_code = case_when(
+    # if its not qr1 then i dont need to worry
+    sicb_code != "11M" ~ sicb_code,
+    # if it is qr1 then use the pcn code where possible
+    pcn_code == "ASPEN PCN" ~ "Gloucester City", 
+    pcn_code == "CHELTENHAM CENTRAL PCN" ~ "Cheltenham", 
+    pcn_code == "CHELTENHAM PERIPHERAL PCN" ~ "Cheltenham", 
+    pcn_code == "ROSEBANK PCN" ~ "Gloucester City", 
+    pcn_code == "BERKELEY VALE PCN" ~ "Stroud & Berkeley Vale", 
+    pcn_code == "SOUTH COTSWOLDS PCN" ~ "Cotswolds", 
+    pcn_code == "FOREST GREEN PCN" ~ "Forest of Dean", 
+    pcn_code == "WEST FOREST OF DEAN PCN" ~ "Forest of Dean", 
+    pcn_code == "NORTH COTSWOLDS PCN" ~ "Cotswolds", 
+    pcn_code == "NORTH & SOUTH GLOUCESTER (NSG) PCN" ~ "Gloucester City", 
+    pcn_code == "SEVERN HEALTH PCN" ~ "Stroud & Berkeley Vale", 
+    pcn_code == "GLOUCESTER INNER CITY PCN" ~ "Gloucester City", 
+    pcn_code == "HADWEN QUEDGELEY PCN" ~ "Gloucester City", 
+    pcn_code == "ST PAUL'S PCN" ~ "Cheltenham", 
+    pcn_code == "TWNS PCN" ~ "TWNS", 
+    pcn_code == "STROUD COTSWOLD PCN" ~ "Stroud & Berkeley Vale", 
+    # right so this somehow doesnt still capture all of the QR1 GPs,
+    # so i am manually adding in the QR1 GP practices who have had >5 frail admissions over the whole period
+    # by manually putting them into the ODS search
+    gp_code == "L84020" ~ "Cotswolds", 
+    gp_code == "L84057" ~ "Gloucester City", 
+    gp_code == "L84042" ~ "Gloucester City", 
+    gp_code == "L84013" ~ "Gloucester City", 
+    gp_code == "L84002" ~ "Gloucester City", 
+    gp_code == "Y00054" ~  "Other Gloucestershire", # homeless health
+    gp_code == "L84017" ~ "Cotswolds", 
+    gp_code == "L84055" ~ "Cotswolds", 
+    .default = "Other Gloucestershire")) 
+
+  
+  
+  
 # import further details on the sub icb locations
 sicb_lookup <- read.csv("1b_Raw_Data/control_vars/ccg_to_icb.csv", 
                        header = FALSE)  |>
   transmute(sicb_code = V1, 
             sicb_name = V2, 
-            icb_code = V13) |> 
+            icb_code = V13) |>
   # remove gloucestershire sub icb as I will re-add the ILPs as sub ICBs
   subset(icb_code != "Y05578")
 
 sicb_lookup <- tibble(
   sicb_code = c(sicb_lookup$sicb_code, 
+                "Stroud & Berkeley Vale", 
+                "TWNS", 
                 "Cheltenham", 
+                "Gloucester City", 
                 "Cotswolds", 
-                "Dean", 
-                "Gloucester", 
-                "Stroud", 
-                "Tewkesbury"),
+                "Forest of Dean"),
   sicb_name = c(sicb_lookup$sicb_name, 
+                "Gloucestershire - Stroud & Berkeley Vale", 
+                "Gloucestershire - TWNS", 
                 "Gloucestershire - Cheltenham", 
+                "Gloucestershire - Gloucester City", 
                 "Gloucestershire - Cotswolds", 
-                "Gloucestershire - Dean", 
-                "Gloucestershire - Gloucester", 
-                "Gloucestershire - Stroud", 
-                "Gloucestershire - Tewkesbury"), 
+                "Gloucestershire - Forest of Dean"), 
   icb_code = c(sicb_lookup$icb_code, 
                "QR1", "QR1", "QR1", 
                "QR1", "QR1", "QR1") ) 
@@ -656,4 +652,5 @@ ggplot(data = result7,
                      col = icb_code)) + 
   geom_line() + 
   facet_grid(Frailty_Accelerator~.) + 
-  theme_minimal()
+  theme_minimal() + 
+  theme(legend.position="none")
