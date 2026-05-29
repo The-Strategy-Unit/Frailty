@@ -198,7 +198,7 @@ rural_tbl |>
 
 ## Potential impact evaluation outcomes
 
-### Reduction in hospital admissions for people living with frailty
+### Hospital admissions for people living with frailty
 
 Hospital admissions by people living with frailty is defined as the number of unplanned admissions to hospital by patients with a HFRS of five or over at the time of admission.
 
@@ -283,7 +283,7 @@ plotly::ggplotly(apc_admissions_plot)
 
 ```
 
-### Fewer hospital re-admissions for people living with frailty within 28 days of discharge
+### Hospital re-admissions for people living with frailty within 28 days of discharge
 
 Hospital readmissions for people living with frailty within 28 days of discharge is a count of the total number of unplanned admissions to hospital by patients with a HFRS of five or over at the time of admissions who also had a discharge within the preceding 28 days. It is worth noting that this definition also excludes patients with various conditions where treatment can involve repeated admission and discharge.
 
@@ -365,7 +365,7 @@ The place level trend for hospital readmissions by people living with frailty pe
 plotly::ggplotly(apc_readmissions_plot)
 ```
 
-### Reduced attendances to Emergency Departments for people living with frailty
+### Attendances to Emergency Departments for people living with frailty
 
 Attendances to Emergency Departments (ED) for people living with frailty is defined as the number of unplanned attendances to ED by patients with a HFRS of five or over at the time of attendance.
 
@@ -447,7 +447,7 @@ The place level trend for ED admissions by people living with frailty per month 
 plotly::ggplotly(ed_admissions_plot)
 ```
 
-### Fewer total bed days used by people living with frailty
+### Total bed days used by people living with frailty
 
 Total bed days used by people living with frailty is the sum of completed days in hospital by patients with a HFRS of five or higher at the time of admissions.
 
@@ -532,7 +532,7 @@ plotly::ggplotly(apc_hospital_days_plot)
 
 ```
 
-### Reduced average length of stay for people living with frailty
+### Average length of stay for people living with frailty
 
 The average length of stay for people living with frailty is the total number of completed days in hospital by patients with a HFRS of five or higher on admission, divided by the number of admissions to hospital by people with a HFRS of five or higher on admission.
 
@@ -624,7 +624,7 @@ The place level trend for average hospital length of stay by people living with 
 plotly::ggplotly(apc_los_plot) 
 ```
 
-### Reduction in hospital conveyances for people living with frailty
+### Hospital conveyances for people living with frailty
 
 Hospital conveyances for people living with frailty was defined as the number of ambulance conveyances to ED for patients with a HFRS of five or higher at attendance, as a proportion of the total number of attendances to ED by patients with a HFRS or five or higher at attendance.
 
@@ -720,7 +720,7 @@ The place level trend for frail ED attendances by ambulance (as a percentage) pe
 plotly::ggplotly(ed_amb_admissions_plot)
 ```
 
-### Reduction in delays to discharge and faster transitions to intermediate care for people living with frailty
+### Delays to discharge and faster transitions to intermediate care for people living with frailty
 
 Delays in discharge for people living with frailty was defined as the number of patients with a HFRS of five or higher on admission, who were discharged after their Discharge Ready Date (DRD), as a proportion of all the discharged patients with a HFRS of five or higher on admissions.
 
@@ -817,7 +817,7 @@ sicb_yearmon_outcomes |>
 
 Although the proportion of discharges without a DRD has come down substantially, the fact that it is still so high and changes so much during the period the programme was implemented means that it is unlikely the proportion of discharges after the DRD would be a reliable measure if used as an outcome in any impact evaluation, as it is difficult to distinguish between changes in measurement (e.g. more patients having DRDs recorded) or a change in underlying true discharge outcomes (e.g. patients being discharged more promptly after being ready to be discharged), especially as different places show different trends to each other in recording a DRD.
 
-### Proportionally more discharges to usual place of residence for people living with frailty
+### Discharges to usual place of residence for people living with frailty
 
 Discharges to usual place of residence was defined as the number of patients with a HFRS of five or higher on admission who were discharged to their usual place of residence, as a proportion of all discharged patients who had a HSF of five or higher on admission. Note that a number of patients were excluded from this analysis entirely due to having discharge location which was primarily caused by external circumstances - for example if their discharge location was a forced repatriation or was unknown.
 
