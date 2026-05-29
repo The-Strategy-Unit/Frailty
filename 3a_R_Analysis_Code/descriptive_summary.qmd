@@ -18,13 +18,18 @@ library(zoo)
 
 sicb_lookup <- read_csv(
   file = "../2b_Wrangled_Data/sicb_lookup.csv") |> 
-  subset(frail_inds_across_all_gp > 10000)
+  subset(frail_inds_across_all_gp > 5000) 
 
 sicb_yearmon_outcomes <- read_csv(
   file = "../2b_Wrangled_Data/sicb_yearmon_outcomes.csv") |> 
   subset(sicb_code %in% sicb_lookup$sicb_code) |> 
   mutate(YearMon = zoo::as.yearmon(YearMon)) |> 
-  subset(YearMon >= "Apr 2019")
+  subset(YearMon >= "Apr 2019") |> 
+  mutate(place_name = ifelse(
+    test = is.na(place_name) & sicb_code == "Gloucester City", 
+    yes = "Gloucester City", 
+    no = place_name
+  ))
 
 sicb_lookup <- left_join(
   x = sicb_lookup, 
