@@ -68,29 +68,29 @@ The available data extended to April 2018, although outcomes for people living w
 
 The following descriptive variables are included here:
 
--   Frail population size,
+- Frail population size,
 
--   Frailty-weighted deprivation score,
+- Frailty-weighted deprivation score,
 
--   Frailty-weighted rural index score.
+- Frailty-weighted rural index score.
 
 The following outcomes are included here as potential outcomes for an impact evaluation:
 
--   Reduction in hospital admissions for people living with frailty,
+- Reduction in hospital admissions for people living with frailty,
 
--   Reduced average length of stay for people living with frailty,
+- Reduced average length of stay for people living with frailty,
 
--   Fewer total bed days used by people living with frailty,
+- Fewer total bed days used by people living with frailty,
 
--   Reduction in delays to discharge and faster transitions to intermediate care,
+- Reduction in delays to discharge and faster transitions to intermediate care,
 
--   Reduced attendances to Emergency Departments for people living with frailty,
+- Reduced attendances to Emergency Departments for people living with frailty,
 
--   Fewer hospital re-admissions within 28 days of discharge,
+- Fewer hospital re-admissions within 28 days of discharge,
 
--   Reduction in hospital conveyances for people living with frailty,
+- Reduction in hospital conveyances for people living with frailty,
 
--   Proportionally more discharges to usual place of residence.
+- Proportionally more discharges to usual place of residence.
 
 ## Descriptive variables
 
@@ -455,7 +455,7 @@ Total bed days used by people living with frailty is the sum of completed days i
 
 
 sum_apc_hospital_days <- signif(sum(subset(sicb_yearmon_outcomes, YearMon <= max_date)$apc_hospital_days),3)
-mean_apc_hospital_days <- signif(mean(subset(sicb_yearmon_outcomes, YearMon <= max_date)$ed_admissions),3)
+mean_apc_hospital_days <- signif(mean(subset(sicb_yearmon_outcomes, YearMon <= max_date)$apc_hospital_days),3)
 
 place_apc_hospital_days <- sicb_yearmon_outcomes |> 
   subset(YearMon <= max_date) |> 
@@ -726,15 +726,15 @@ Delays in discharge for people living with frailty was defined as the number of 
 
 Hospital discharges are grouped into five categories, in relation to the patient's discharge ready date (DRD):
 
--   discharged on the same day as admission
+- discharged on the same day as admission
 
--   discharged after the DRD
+- discharged after the DRD
 
--   discharged on the DRD
+- discharged on the DRD
 
--   discharged before the DRD
+- discharged before the DRD
 
--   no DRD.
+- no DRD.
 
 The overall breakdown for discharge date for people living with frailty across all places within the ICB across the full period is shown below.
 
